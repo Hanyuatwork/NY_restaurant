@@ -3,6 +3,7 @@ This is a data visulization project that visualiza the top 25 cuisines in new yo
 Used data from:
 https://raw.githubusercontent.com/hvo/datasets/master/nyc_zip.geojson
 https://raw.githubusercontent.com/hvo/datasets/master/nyc_restaurants_by_cuisine.json
+
 to build New york map, and fill the color.
 
 
