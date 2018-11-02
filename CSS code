@@ -1,0 +1,40 @@
+
+.scale{
+  fill: Black;
+  font-size: 10px;
+}
+
+.zip{
+  stroke:steelblue;
+  stroke-width:1px;
+  fill:none;
+}
+
+.table {
+  fill: lightgray;
+}
+
+.bar {
+  fill: SteelBlue;
+}
+
+.bar:hover {
+  fill: Salmon;
+}
+
+.axis--x path,
+.axis--y path {
+  display: none;
+}
+
+
+.label {
+  fill: Black;
+  font-size: 18px;
+}
+
+.grid line {
+  stroke:
+    LightGrey;
+}
+
