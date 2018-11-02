@@ -3,7 +3,7 @@ This is a data visulization project that visualiza the top 25 NT restaurant by z
 
 Here's a walkthrough:
 
-<img src='https://github.com/Hanyuatwork/Flix/blob/master/Flix%2011.44.58%20PM.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://github.com/Hanyuatwork/NY_restaurant/blob/master/NY_restaurant.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 
 
