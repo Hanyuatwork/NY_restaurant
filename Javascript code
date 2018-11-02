@@ -1,0 +1,182 @@
+var Zipcode_URL= "https://raw.githubusercontent.com/hvo/datasets/master/nyc_zip.geojson";
+var cuisines_URL= "https://raw.githubusercontent.com/hvo/datasets/master/nyc_restaurants_by_cuisine.json"
+
+d3.queue()
+  .defer(d3.json, Zipcode_URL)
+  .defer(d3.json, cuisines_URL)
+  .await(createMap);
+
+function createMap(error, zips, cuisines){
+  var canvasSize = [1200, 650],
+      svg        = d3.select("svg"),
+      g       = svg.append("g");
+ 
+  
+  var projection = d3.geoMercator()
+                      .scale(Math.pow(2, 10 +5.34))
+                       //5.34 = log2(256/(2 *M_PI))
+                      //.scale(650/(3.14/360))
+                      .center([-73.975,40.7])
+                      .translate([canvasSize[0]/2.25,canvasSize[1]/2])
+  
+  var path = d3.geoPath()
+                .projection(projection);
+  
+  g.selectAll(".zip")
+  .data(zips.features)
+  .enter().append("path")
+    .attr("class", "zip")
+    .attr("d",path);
+
+   
+  
+//    var data = {"10001":10,
+//               "10002":20,
+//               "10003":20,
+//               "10004":50,
+//               "11220":40},
+//       items= Object.entries(data),
+//       maxV = d3.max(items, d=>d[1]),
+//       color= d3.scaleThreshold()
+//                 .domain(d3.range(0,maxV,maxV/5))
+//                 .range(d3.schemeBlues[5]);
+  
+//   g.selectAll(".zip")
+//         .data(items,key)
+//         .style("fill", d=> color(d[1]));
+  
+  var cuisine_data = cuisines.map(obj =>[ 
+                  obj['cuisine'],
+                  obj['total'],
+                  ])
+  data1 = cuisine_data.slice(0,25)
+  
+  fill_up(g, cuisines[0].perZip,data1[0]);
+  
+  var maxValue = d3.max(data1, d => d[1]);
+  var x        = d3.scaleLinear()
+                  .domain([0, maxValue])
+                  .rangeRound([0, 250]);
+  var y        = d3.scaleBand()
+                  .domain(data1.map(d => d[0]))
+                  .rangeRound([50, 600]);
+
+  var tooltip = d3.select("body").append("div").attr("class", "tooltip")
+
+
+  
+  g.append('g')
+    .attr('class', 'axis axis--y')
+    .attr('transform', 'translate(55, -2)')
+    .call(d3.axisLeft(y))
+    .append("text")
+        .attr("class", "label")
+        .attr("x", 200)
+        .attr("y", 640)
+        .text("Number of Restaurant")
+
+  g.append('g')
+    .attr('class', 'axis axis--x')
+    .attr('transform', 'translate(60, 600)')
+    .call(d3.axisBottom(x).ticks(4).tickFormat(d3.format(".2s")))
+
+  g.append('g')
+    .attr('class', 'axis axis--x')
+    .attr('transform', 'translate(60, 55)')
+    .call(d3.axisTop(x).ticks(4).tickFormat(d3.format(".2s")))
+
+  g.append('g')
+    .attr('class', 'grid axis--x')
+    .attr('transform', 'translate(60, 55)')
+    .call(d3.axisTop(x).ticks(4).tickSize(-550).tickFormat(""))
+
+ 
+  
+  g.selectAll(".bar")
+    .data(data1)
+    .enter().append('rect')
+      .attr('class', 'bar')
+      .attr('x', 60)
+      .attr('y', d => y(d[0]))
+  
+      .attr('width', d => x(d[1]))
+      .attr('height', 18)
+    .on("click", function (d,i){
+        fill_up(g, cuisines[i].perZip,data1[i]);
+    })
+  
+ 
+}
+function key(d){
+  if(d[0])
+    return d[0];
+  else{
+    return d.properties.zipcode;
+  }
+}
+
+function fill_up(g, datas,name){
+  var items= Object.entries(datas),
+  maxV = d3.max(items, d=>d[1]),
+  color= d3.scaleThreshold()
+            .domain(d3.range(0,maxV,maxV/5))
+            .range(d3.schemeBlues[5]);
+  
+  
+  g.selectAll(".zip")
+        .data(items,key)
+        .transition().duration(1000)
+        .style("fill", d=> color(d[1]));
+  
+
+  var scale   = d3.scaleLinear()
+              .domain([0, 0])
+              .rangeRound([350, 489]);
+  
+  g.append('g')
+  .attr('class', 'grid axis--x')
+  .attr('transform', 'translate(0, 50)')
+  .call(d3.axisTop(scale).ticks(5).tickSize(-15).tickFormat(""))
+  
+ g.selectAll(".scale").remove();
+  
+  g.append('text')
+      .attr('class','scale')
+      .attr('x', 355)
+      .attr('y', 45)
+      .text("Number of "+name[0]+" Resaurant");
+  
+  for(i=0; i<4; ++i){
+    g.append('rect')
+      .attr('class','scale')
+      .attr('x', 350+i*35)
+      .attr('y', 50)
+      .attr('width', 35)
+      .attr('height', 7)
+      .style("fill", color(i/4*maxV))
+  }
+ 
+  for(i=0;i<5;++i){
+    g.append('text')
+      .attr('class','scale')
+      .attr('x', 412+33*(i-2))
+      .attr('y', 70)
+      .text(Math.round((i/5 * maxV)).toString())
+  }
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
